@@ -26,8 +26,7 @@ Replace `~/.zshrc` with `~/.bash_profile` everywhere in the file if you don't ha
 
 Execute with
 ```bash
-$ zsh setup.sh
-$ bash setup.sh # modify for bash
+$ zsh setup.sh # or bash
 $ echo $MOVIE_DATABASE_URL
   sqlite:////Users/<usename>/Documents/movies.db
 ```
@@ -36,10 +35,9 @@ $ echo $MOVIE_DATABASE_URL
 ```bash
 $ movienator add "Cloud Atlas"
   "Cloud Atlas" has been added!
-
-$ movienator remove "Ratatouille"
-  There is no "Ratatouille", thus nothing was deleted
 ```
 
 ## What is This?
-Trying to pick up [`sqlx`](https://crates.io/crates/sqlx). And for how simple this is, it could be generalized to store more than movies. It really could store anything with a few modifications
+Jusr trying to pick up [`sqlx`](https://crates.io/crates/sqlx)
+
+And for how simple this is, it could be generalized to store more than movies. It really could store anything with a few modifications
