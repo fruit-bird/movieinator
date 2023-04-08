@@ -28,7 +28,7 @@ Execute with
 ```bash
 $ zsh setup.sh # or bash
 $ echo $MOVIE_DATABASE_URL
-  sqlite:////Users/<usename>/Documents/movies.db
+  sqlite:////Users/<username>/Documents/movies.db
 ```
 
 ## Example

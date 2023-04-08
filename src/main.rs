@@ -9,10 +9,9 @@ use std::env;
 
 #[tokio::main]
 async fn main() -> sqlx::Result<()> {
-    // DATABASE_URL environment variable is set with the desired location
     // let _env_file_contents = dotenv::dotenv().ok();
     let db_url = env::var("MOVIE_DATABASE_URL")
-        .expect("You must set a `MOVIE_DATABASE_URL` environment variable. See <readme setup section link> for instructions");
+        .expect("You must set a `MOVIE_DATABASE_URL` environment variable. See https://github.com/fruit-bird/movieinator#setup for instructions");
 
     // creating/loading + connecting to the database
     let mut database = MovieDB::new(db_url).await?;

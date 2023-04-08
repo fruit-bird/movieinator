@@ -3,4 +3,5 @@
 # database related files
 # /.env
 /*.sqlite*
+/*.db
 /*.py
