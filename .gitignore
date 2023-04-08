@@ -1,0 +1,6 @@
+/target
+
+# database related files
+# /.env
+/*.sqlite*
+/*.py
