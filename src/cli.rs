@@ -70,7 +70,7 @@ impl MovieOptions {
                 count,
                 debug,
             } => match title {
-                Some(t) => database.display_movie(t, *debug).await?,
+                Some(t) => database.display_movies(t, *debug).await?,
                 None => match count {
                     true => _ = database.count_all().await?,
                     false => database.display_all(*debug).await?,

@@ -1,6 +1,6 @@
 [package]
 name = "movienator"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -11,5 +11,9 @@ sqlx = { version = "0.6.3", features = ["runtime-tokio-native-tls", "sqlite"] }
 text_io = "0.1.12"
 tokio = { version = "1.27.0", features = ["full"] }
 
-# [dev-dependencies]
+[dev-dependencies]
 dotenv = "0.15.0"
+anyhow = "1.0.70"
+
+[profile.dev.package.sqlx-macros]
+opt-level = 3

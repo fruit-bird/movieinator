@@ -1,9 +1,9 @@
 use crate::movie::Movie;
 use sqlx::{migrate::MigrateDatabase, Connection, Result, Row, SqliteConnection};
-use std::fmt::Debug;
 
 // TODO: Adapt DB to the extra columns added to the Movie TABLE
 pub struct MovieDB {
+    #[allow(dead_code)]
     db_url: String,
     executor: SqliteConnection,
 }
@@ -120,7 +120,7 @@ impl MovieDB {
         Ok(())
     }
 
-    pub async fn display_movie(&mut self, title: &str, debug: bool) -> Result<()> {
+    pub async fn display_movies(&mut self, title: &str, debug: bool) -> Result<()> {
         let movies =
             sqlx::query_as::<_, Movie>("SELECT id, title FROM Movie WHERE LOWER(title) LIKE ?")
                 .bind(format!("%{}%", title.to_lowercase()))
@@ -171,13 +171,5 @@ impl MovieDB {
             println!("You have {} movies stored", count);
         }
         Ok(count)
-    }
-}
-
-impl Debug for MovieDB {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("MovieDB")
-            .field("db_url", &self.db_url)
-            .finish()
     }
 }

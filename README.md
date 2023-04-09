@@ -38,6 +38,6 @@ $ movienator add "Cloud Atlas"
 ```
 
 ## What is This?
-Jusr trying to pick up [`sqlx`](https://crates.io/crates/sqlx)
+Just trying to pick up [`sqlx`](https://crates.io/crates/sqlx)
 
 And for how simple this is, it could be generalized to store more than movies. It really could store anything with a few modifications
