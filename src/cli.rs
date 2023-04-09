@@ -38,6 +38,9 @@ enum MovieOptions {
         // /// Number of movies to display
         // #[clap(long, short, default_value = "1000")]
         // limit: u32,
+        /// Print number of stored movies
+        #[clap(long, short, conflicts_with = "title")]
+        count: bool,
         /// Print all info about movies
         #[clap(long, short)]
         debug: bool,
@@ -62,9 +65,16 @@ impl MovieOptions {
     async fn parse(&self, database: &mut MovieDB) -> Result<()> {
         match self {
             MovieOptions::Add { title, .. } => database.add_movie(title).await?,
-            MovieOptions::List { title, debug } => match title {
+            MovieOptions::List {
+                title,
+                count,
+                debug,
+            } => match title {
                 Some(t) => database.display_movie(t, *debug).await?,
-                None => database.display_all(*debug).await?,
+                None => match count {
+                    true => _ = database.count_all().await?,
+                    false => database.display_all(*debug).await?,
+                },
             },
             MovieOptions::Remove { title, all, force } => match all {
                 true => database.remove_all().await?,

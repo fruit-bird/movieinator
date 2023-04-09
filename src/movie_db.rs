@@ -21,9 +21,9 @@ impl MovieDB {
                 "CREATE TABLE IF NOT EXISTS Movie (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         title TEXT NOT NULL,
-                        watch_date TEXT,
-                        comment TEXT,
-                        rating REAL
+                        -- watch_date TEXT,
+                        -- comment TEXT,
+                        -- rating REAL
                     );",
             )
             .execute(&mut database.executor)
@@ -120,9 +120,6 @@ impl MovieDB {
         Ok(())
     }
 
-    /// Lists the movie(s) with the given title. Works like `ls "title"`
-    ///
-    /// Lists movies with the name "title" if it is given. If not, it prints all movies
     pub async fn display_movie(&mut self, title: &str, debug: bool) -> Result<()> {
         let movies =
             sqlx::query_as::<_, Movie>("SELECT id, title FROM Movie WHERE LOWER(title) LIKE ?")
@@ -149,16 +146,31 @@ impl MovieDB {
             .await?;
 
         if debug {
+            let _print_count = self.count_all().await?;
             for movie in movies {
                 println!("{:?}", movie)
             }
         } else {
+            let _print_count = self.count_all().await?;
             // TODO: have some function (or method from Movie struct) that prints out details about a movie
             for movie in movies {
                 println!("{}", movie)
             }
         }
         Ok(())
+    }
+
+    pub async fn count_all(&mut self) -> Result<i32> {
+        let count = sqlx::query_scalar::<_, i32>("SELECT COUNT(id) FROM Movie")
+            .fetch_one(&mut self.executor)
+            .await?;
+
+        if count == 1 {
+            println!("You have 1 movie stored");
+        } else {
+            println!("You have {} movies stored", count);
+        }
+        Ok(count)
     }
 }
 
