@@ -22,7 +22,7 @@ if ! env | grep -q "^MOVIE_DATABASE_URL="; then
 fi
 
 # --- Setting up terminal autocompletion ---
-FULL_FILE_PATH=$(realpath "./completions/_movienator")
+FULL_FILE_PATH=$(realpath "./completions/_movienator.sh")
 mkdir -p ~/.custom-zsh-completions
 
 if [ ! -f "~/.custom-zsh-completions/_movienator" ]; then

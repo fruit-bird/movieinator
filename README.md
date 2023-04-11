@@ -67,4 +67,4 @@ I'm especially proud of the `movienator list` command; its display formatting, p
 ## What is This?
 Just trying to pick up [`sqlx`](https://crates.io/crates/sqlx)
 
-And for how simple this is, it could be generalized to store more than movies. It really could store anything with a few modifications
+And for how simple this is, it could be generalized to store more than movies
