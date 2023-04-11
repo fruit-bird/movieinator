@@ -23,13 +23,12 @@ fi
 
 # --- Setting up terminal autocompletion ---
 FULL_FILE_PATH=$(realpath "./completions/_movienator")
-mkdir -p /usr/local/share/zsh/site-functions/
+mkdir -p ~/.custom-zsh-completions
 
-if [ ! -f "/usr/local/share/zsh/site-functions/_movienator" ]; then
+if [ ! -f "~/.custom-zsh-completions/_movienator" ]; then
     # this branch needs sudo to execute. trap catches errors if sudo is not enabled
-    trap 'echo -e "\nFailed while attempting to write to a protected directory.\nTry: \`sudo ./setup.sh\`"' ERR
-    cp "${FULL_FILE_PATH}" /usr/local/share/zsh/site-functions/
-    echo "source ~/Developer/Rust/movieinator/completions/_movienator" >> ~/.zshrc
+    cp "${FULL_FILE_PATH}" ~/.custom-zsh-completions
+    echo "source ~/.custom-zsh-completions/_movienator" >> ~/.zshrc
 fi
 
 # Reload the ~/.zshrc file
