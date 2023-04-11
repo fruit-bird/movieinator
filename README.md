@@ -62,7 +62,7 @@ clap_complete::generate_to(
 ```
 
 ### Customized Display
-I'm especially proud of the `movienator list` command; its display formatting and broad search capability
+I'm especially proud of the `movienator list` command; its display formatting, pagination, and broad search capability
 
 ## What is This?
 Just trying to pick up [`sqlx`](https://crates.io/crates/sqlx)
