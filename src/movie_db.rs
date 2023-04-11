@@ -1,3 +1,9 @@
+use std::{
+    fmt::{Debug, Display},
+    io::{self, Write},
+    process::{Command, Stdio},
+};
+
 use crate::movie::Movie;
 use sqlx::{migrate::MigrateDatabase, Connection, Result, Row, SqliteConnection};
 
@@ -131,15 +137,7 @@ impl MovieDB {
             .fetch_all(&mut self.executor)
             .await?;
 
-        if debug {
-            for movie in movies {
-                println!("{:?}", movie)
-            }
-        } else {
-            for movie in movies {
-                println!("{}", movie)
-            }
-        }
+        output_pager(&movies, debug)?;
         Ok(())
     }
 
@@ -148,17 +146,8 @@ impl MovieDB {
             .fetch_all(&mut self.executor)
             .await?;
 
-        if debug {
-            let _print_count = self.count_all().await?;
-            for movie in movies {
-                println!("{:?}", movie)
-            }
-        } else {
-            let _print_count = self.count_all().await?;
-            for movie in movies {
-                println!("{}", movie)
-            }
-        }
+        let _print_count = self.count_all().await?;
+        output_pager(&movies, debug)?;
         Ok(())
     }
 
@@ -174,4 +163,33 @@ impl MovieDB {
         }
         Ok(count)
     }
+}
+
+/// Pages the input using the `less` command and PRINTS IT
+fn output_pager<T: Debug + Display>(input: &[T], debug: bool) -> io::Result<()> {
+    let (_, term_height) = term_size::dimensions().unwrap_or((80, 24));
+    let input = input
+        .iter()
+        .map(|x| match debug {
+            true => format!("{:?}\n", x),
+            false => format!("{}\n", x),
+        })
+        .collect::<String>();
+
+    if input.lines().count() > term_height {
+        let mut pager = Command::new("less")
+            .arg("-")
+            .stdin(Stdio::piped())
+            .stdout(Stdio::inherit())
+            .spawn()?;
+
+        if let Some(ref mut stdin) = pager.stdin {
+            stdin.write_all(input.as_bytes())?;
+            pager.wait()?;
+        }
+    } else {
+        println!("{}", input);
+    }
+
+    Ok(())
 }
