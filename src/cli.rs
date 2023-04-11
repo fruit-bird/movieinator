@@ -19,22 +19,25 @@ impl MovieCLI {
 
 #[derive(Debug, Subcommand)]
 enum MovieOptions {
-    /// Add a movie entry
+    /// Insert a movie
     Add {
         /// Title of the movie
         title: String,
-        /// Date when movie was seen (Format: YYYY-DD-MM)
+        /// Date when movie was seen (Format: YYYY-MM-DD)
+        #[clap(short = 'd')]
         watch_date: Option<String>,
+        /// 0 to 5 rating
+        #[clap(short)]
+        rating: Option<u8>,
         /// Thoughts about the movie
-        comment: Option<String>,
-        /// 0 to 5 rating. Could be decimal
-        rating: Option<f32>,
+        #[clap(short)]
+        thoughts: Option<String>,
     },
-    /// Print movie info
+    /// Print movie information
     List {
         /// Matches movies with given pattern
         title: Option<String>,
-        // have something that paginates the entries instead of limiting number to display
+        // TODO: have something that paginates through the entries instead of limiting number to display
         // /// Number of movies to display
         // #[clap(long, short, default_value = "1000")]
         // limit: u32,
@@ -64,13 +67,22 @@ enum MovieOptions {
 impl MovieOptions {
     async fn parse(&self, database: &mut MovieDB) -> Result<()> {
         match self {
-            MovieOptions::Add { title, .. } => database.add_movie(title).await?,
+            MovieOptions::Add {
+                title,
+                watch_date,
+                thoughts,
+                rating,
+            } => {
+                database
+                    .add_movie(&title, watch_date.as_deref(), thoughts.as_deref(), *rating)
+                    .await?
+            }
             MovieOptions::List {
                 title,
                 count,
                 debug,
             } => match title {
-                Some(t) => database.display_movies(t, *debug).await?,
+                Some(ref t) => database.display_movies(t, *debug).await?,
                 None => match count {
                     true => _ = database.count_all().await?,
                     false => database.display_all(*debug).await?,
@@ -79,7 +91,7 @@ impl MovieOptions {
             MovieOptions::Remove { title, all, force } => match all {
                 true => database.remove_all().await?,
                 false => {
-                    if let Some(t) = title {
+                    if let Some(ref t) = title {
                         database.remove_movie(t, *force).await?;
                     }
                 }
