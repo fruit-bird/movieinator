@@ -1,18 +1,36 @@
 #!/bin/zsh
+# !! THIS SETUP SCRIPT MUST BE RAN IN THE PROJECT ROOT !!
 
-# ~~ CHANGE THIS LINE! ~~
-PATH_TO_DATABASE="/Users/<username>/Documents"
+# exit immediately if anything fails
+set -e
 
-# Setting the env variable
-# modify the path to `movie.sqlite` to where you want to store it
-MOVIE_DATABASE_URL="sqlite://$PATH_TO_DATABASE/movies.db"
+PATH_TO_DATABASE=~/Documents # ~ CHANGE THIS LINE TO THE DESIRED PATH ~
+FULL_PATH_TO_DATABASE="$(realpath "${PATH_TO_DATABASE}")"
 
-# Add the export command to the ~/.zshrc file
-echo -e "\n# Movienator Database Path (https://github.com/fruit-bird/movieinator)" >> ~/.zshrc
-echo "export MOVIE_DATABASE_URL=\"$MOVIE_DATABASE_URL\"" >> ~/.zshrc
+# --- Setting the environment variable ---
+# Adding the export command to the ~/.zshrc file if it does not exist
+if ! env | grep -q "^MOVIE_DATABASE_URL="; then
+    # if `MOVIE_DATABASE_URL` does not exist
+    MOVIE_DATABASE_URL="sqlite://${PATH_TO_DATABASE}/movies.db"
+
+    # exporting it to the shell
+    echo -e "\n# Movienator Database Path (https://github.com/fruit-bird/movieinator)" >> ~/.zshrc
+    echo "export MOVIE_DATABASE_URL=\"${MOVIE_DATABASE_URL}\"" >> ~/.zshrc
+
+    # printing to verify
+    echo "The MOVIE_DATABASE_URL environment variable is set to: ${MOVIE_DATABASE_URL}" 
+fi
+
+# --- Setting up terminal autocompletion ---
+FULL_FILE_PATH=$(realpath "./completions/_movienator")
+mkdir -p /usr/local/share/zsh/site-functions/
+
+if [ ! -f "/usr/local/share/zsh/site-functions/_movienator" ]; then
+    # this branch needs sudo to execute. trap catches errors if sudo is not enabled
+    trap 'echo -e "\nFailed while attempting to write to a protected directory.\nTry: \`sudo ./setup.sh\`"' ERR
+    cp "${FULL_FILE_PATH}" /usr/local/share/zsh/site-functions/
+    echo "source ~/Developer/Rust/movieinator/completions/_movienator" >> ~/.zshrc
+fi
 
 # Reload the ~/.zshrc file
 source ~/.zshrc
-
-# Verify that the environment variable is set
-echo "The MOVIE_DATABASE_URL environment variable is set to: $MOVIE_DATABASE_URL"

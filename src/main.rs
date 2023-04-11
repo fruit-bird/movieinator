@@ -9,6 +9,12 @@ use std::env;
 
 #[tokio::main]
 async fn main() -> sqlx::Result<()> {
+    // TODO: - find new method to generate terminal completion with clap
+    //       - add a sort flag for list that either sorts by date added,
+    //          - or takes a specific column name and sorts with that
+    //          - ie: movienator list --sort rating
+    //          - possible values would be [title, date_watched, rating]
+    //       - page list output with `less`
     let db_url = match env::var("MOVIE_DATABASE_URL") {
         Ok(url) => url,
         Err(_) => {

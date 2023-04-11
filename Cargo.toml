@@ -4,6 +4,8 @@ version = "0.1.2"
 edition = "2021"
 authors = ["fruit-bird"]
 
+# include = ["completions/_movienator"]
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
@@ -11,8 +13,8 @@ clap = { version = "4.2.1", features = ["derive"] }
 sqlx = { version = "0.6.3", features = ["runtime-tokio-native-tls", "sqlite"] }
 text_io = "0.1.12"
 tokio = { version = "1.27.0", features = ["full"] }
-dotenv = "0.15.0"
 
 [dev-dependencies]
 dotenv = "0.15.0"
 anyhow = "1.0.70"
+clap_complete = "4.2.0"
