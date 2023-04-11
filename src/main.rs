@@ -5,7 +5,7 @@ mod movie_db;
 use crate::cli::MovieCLI;
 use crate::movie_db::MovieDB;
 use clap::Parser;
-use std::{env, process};
+use std::env;
 
 #[tokio::main]
 async fn main() -> sqlx::Result<()> {
@@ -13,7 +13,7 @@ async fn main() -> sqlx::Result<()> {
         Ok(url) => url,
         Err(_) => {
             eprintln!("You must set a `MOVIE_DATABASE_URL` environment variable.\nSee https://github.com/fruit-bird/movieinator#setup for instructions");
-            process::exit(1);
+            return Ok(());
         }
     };
 

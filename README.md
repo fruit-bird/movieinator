@@ -1,8 +1,8 @@
 # Movienator
 
-A CLI to store movie titles
+A CLI to store simple information about movies
 
-Uses an `sqlite` database as means of storage
+Uses sqlite as means of storage
 
 ## Usage
 ```
@@ -33,11 +33,21 @@ $ echo $MOVIE_DATABASE_URL
 
 ## Example
 ```bash
-$ movienator add "Cloud Atlas"
+$ movienator add "Cloud Atlas" -d 1970-01-01 -r 5
   "Cloud Atlas" has been added!
+
+$ movienator add "Interstellar" -r 5
+  "Interstellar" has been added!
+  
+$ movienator list
+  You have 2 movies stored
+  * | Cloud Atlas                             |  1970-01-01  |   5/5   | (no thoughts)
+  * | Interstellar                            |   ________   |   5/5   | (no thoughts)
 ```
 
 ## What is This?
 Just trying to pick up [`sqlx`](https://crates.io/crates/sqlx)
+
+I'm especially proud of the `movienator list` command; its display formatting and broad search capability
 
 And for how simple this is, it could be generalized to store more than movies. It really could store anything with a few modifications
