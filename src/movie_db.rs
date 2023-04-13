@@ -1,9 +1,3 @@
-use std::{
-    fmt::{Debug, Display},
-    io::{self, Write},
-    process::{Command, Stdio},
-};
-
 use crate::movie::Movie;
 use sqlx::{migrate::MigrateDatabase, Connection, Result, Row, SqliteConnection};
 
@@ -57,7 +51,7 @@ impl MovieDB {
 
         if movie_exists.is_some() {
             // confirm insertion if movie with same title exists
-            println!("\"{title}\" already exists, do you still want to insert it? (y/[n])");
+            eprintln!("\"{title}\" already exists, do you still want to insert it? (y/[n])");
 
             let input: String = text_io::read!("{}\n");
             if input.to_lowercase() != "y" && input.to_lowercase() != "yes" {
@@ -131,23 +125,60 @@ impl MovieDB {
         Ok(())
     }
 
-    pub async fn display_movies(&mut self, title: &str, debug: bool) -> Result<()> {
-        let movies = sqlx::query_as::<_, Movie>("SELECT * FROM Movie WHERE LOWER(title) LIKE ?")
-            .bind(format!("%{}%", title.to_lowercase()))
-            .fetch_all(&mut self.executor)
-            .await?;
+    pub async fn display_movies(
+        &mut self,
+        title: &str,
+        sort: Option<&str>,
+        debug: bool,
+    ) -> Result<()> {
+        let movies = if let Some(col) = sort {
+            let order = if col == "title" { "ASC" } else { "DESC" };
+            let sort_query = format!(
+                "SELECT * FROM Movie WHERE LOWER(title) LIKE ? ORDER BY LOWER({}) {}",
+                col, order
+            );
+            
+            sqlx::query_as::<_, Movie>(&sort_query)
+                .fetch_all(&mut self.executor)
+                .await?
+        } else {
+            sqlx::query_as::<_, Movie>("SELECT * FROM Movie WHERE LOWER(title) LIKE ?")
+                .bind(format!("%{}%", title.to_lowercase()))
+                .fetch_all(&mut self.executor)
+                .await?
+        };
 
-        output_pager(&movies, debug)?;
+        pager::Pager::new().setup();
+        match debug {
+            true => movies.iter().for_each(|m| println!("{:?}", m)),
+            false => movies.iter().for_each(|m| println!("{}", m)),
+        }
         Ok(())
     }
 
-    pub async fn display_all(&mut self, debug: bool) -> Result<()> {
-        let movies = sqlx::query_as::<_, Movie>("SELECT * FROM Movie")
-            .fetch_all(&mut self.executor)
-            .await?;
+    pub async fn display_all(&mut self, sort: Option<&str>, debug: bool) -> Result<()> {
+        let movies = if let Some(col) = sort {
+            // Sorting for different values of col
+            //      - title: ASC
+            //      - watch_date | rating: DESC
+            let order = if col == "title" { "ASC" } else { "DESC" };
+            let sort_query = format!("SELECT * FROM Movie ORDER BY LOWER({}) {}", col, order);
+
+            sqlx::query_as::<_, Movie>(&sort_query)
+                .fetch_all(&mut self.executor)
+                .await?
+        } else {
+            sqlx::query_as::<_, Movie>("SELECT * FROM Movie")
+                .fetch_all(&mut self.executor)
+                .await?
+        };
 
         let _print_count = self.count_all().await?;
-        output_pager(&movies, debug)?;
+        pager::Pager::new().setup();
+        match debug {
+            true => movies.iter().for_each(|m| println!("{:?}", m)),
+            false => movies.iter().for_each(|m| println!("{}", m)),
+        }
         Ok(())
     }
 
@@ -163,33 +194,4 @@ impl MovieDB {
         }
         Ok(count)
     }
-}
-
-/// Pages the input using the `less` command and PRINTS IT
-fn output_pager<T: Debug + Display>(input: &[T], debug: bool) -> io::Result<()> {
-    let (_, term_height) = term_size::dimensions().unwrap_or((80, 24));
-    let input = input
-        .iter()
-        .map(|x| match debug {
-            true => format!("{:?}\n", x),
-            false => format!("{}\n", x),
-        })
-        .collect::<String>();
-
-    if input.lines().count() > term_height {
-        let mut pager = Command::new("less")
-            .arg("-")
-            .stdin(Stdio::piped())
-            .stdout(Stdio::inherit())
-            .spawn()?;
-
-        if let Some(ref mut stdin) = pager.stdin {
-            stdin.write_all(input.as_bytes())?;
-            pager.wait()?;
-        }
-    } else {
-        println!("{}", input);
-    }
-
-    Ok(())
 }

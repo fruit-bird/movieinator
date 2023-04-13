@@ -6,9 +6,6 @@ use std::fmt::Display;
 pub struct Movie {
     pub id: i64,
     pub title: String,
-    // just store the date as a string for now
-    // possibly convert to chrono::NaiveDate
-    // if wanting to allow sorting by date when listing
     pub watch_date: Option<String>,
     pub thoughts: Option<String>,
     pub rating: Option<u8>,

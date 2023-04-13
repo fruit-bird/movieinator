@@ -1,5 +1,7 @@
+use std::ops::Deref;
+
 use crate::movie_db::MovieDB;
-use clap::{Parser, Subcommand};
+use clap::{Parser, Subcommand, ValueEnum};
 use sqlx::Result;
 
 #[derive(Debug, Parser)]
@@ -23,7 +25,7 @@ enum MovieOptions {
     Add {
         /// Title of the movie
         title: String,
-        /// Date when movie was seen (Format: YYYY-MM-DD)
+        /// Date when movie was watched (Format: YYYY-MM-DD)
         #[clap(short = 'd')]
         watch_date: Option<String>,
         /// 0 to 5 rating
@@ -37,13 +39,12 @@ enum MovieOptions {
     List {
         /// Matches movies with given pattern
         title: Option<String>,
-        // TODO: have something that paginates through the entries instead of limiting number to display
-        // /// Number of movies to display
-        // #[clap(long, short, default_value = "1000")]
-        // limit: u32,
         /// Print number of stored movies
         #[clap(long, short, conflicts_with = "title")]
         count: bool,
+        /// Sort movies by value
+        #[clap(long, short, value_enum)]
+        sort: Option<SortKeys>,
         /// Print all info about movies
         #[clap(long, short)]
         debug: bool,
@@ -51,7 +52,6 @@ enum MovieOptions {
     /// Remove a movie
     Remove {
         /// Title of the movie to remove
-        #[clap(conflicts_with = "all")]
         title: Option<String>,
         /// Remove *ALL* movies
         #[clap(short, long, conflicts_with = "title")]
@@ -81,11 +81,12 @@ impl MovieOptions {
                 title,
                 count,
                 debug,
+                sort,
             } => match title {
-                Some(ref t) => database.display_movies(t, *debug).await?,
+                Some(ref t) => database.display_movies(t, sort.as_deref(), *debug).await?,
                 None => match count {
                     true => _ = database.count_all().await?,
-                    false => database.display_all(*debug).await?,
+                    false => database.display_all(sort.as_deref(), *debug).await?,
                 },
             },
             MovieOptions::Remove { title, all, force } => match all {
@@ -98,5 +99,25 @@ impl MovieOptions {
             },
         }
         Ok(())
+    }
+}
+
+#[derive(Debug, Clone, ValueEnum)]
+#[clap(rename_all = "kebab-case")]
+pub enum SortKeys {
+    Title,
+    WatchDate,
+    Rating,
+}
+
+impl Deref for SortKeys {
+    type Target = str;
+
+    fn deref(&self) -> &Self::Target {
+        match self {
+            SortKeys::Title => "title",
+            SortKeys::WatchDate => "watch_date",
+            SortKeys::Rating => "rating",
+        }
     }
 }
