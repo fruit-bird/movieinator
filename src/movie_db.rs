@@ -158,9 +158,6 @@ impl MovieDB {
 
     pub async fn display_all(&mut self, sort: Option<&str>, debug: bool) -> Result<()> {
         let movies = if let Some(col) = sort {
-            // Sorting for different values of col
-            //      - title: ASC
-            //      - watch_date | rating: DESC
             let order = if col == "title" { "ASC" } else { "DESC" };
             let sort_query = format!("SELECT * FROM Movie ORDER BY LOWER({}) {}", col, order);
 
