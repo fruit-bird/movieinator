@@ -5,31 +5,34 @@
 set -e
 
 PATH_TO_DATABASE=~/Documents # ~ CHANGE THIS LINE TO THE DESIRED PATH ~
-FULL_PATH_TO_DATABASE="$(realpath "${PATH_TO_DATABASE}")"
 
-# --- Setting the environment variable ---
+# ------------------ SETTING THE ENVIRONMENT VARIABLE ------------------
 # Adding the export command to the ~/.zshrc file if it does not exist
-if ! env | grep -q "^MOVIE_DATABASE_URL="; then
-    # if `MOVIE_DATABASE_URL` does not exist
-    MOVIE_DATABASE_URL="sqlite://${PATH_TO_DATABASE}/movies.db"
+if [ -z ${MOVIE_DATABASE_URL} ]; then
+    MOVIE_DB_URL="sqlite:///${PATH_TO_DATABASE}/movies.db"
 
     # exporting it to the shell
-    echo -e "\n# Movienator Database Path (https://github.com/fruit-bird/movieinator)" >> ~/.zshrc
-    echo "export MOVIE_DATABASE_URL=\"${MOVIE_DATABASE_URL}\"" >> ~/.zshrc
-
-    # printing to verify
-    echo "The MOVIE_DATABASE_URL environment variable is set to: ${MOVIE_DATABASE_URL}" 
+    # these 2 lines keep getting executed no matter what
+    echo "\n# Movienator Database Path (https://github.com/fruit-bird/movieinator)" >> ~/.zshrc
+    echo "export MOVIE_DATABASE_URL=\"${MOVIE_DB_URL}\"" >> ~/.zshrc
 fi
+# ------------------ SETTING THE ENVIRONMENT VARIABLE ------------------
 
-# --- Setting up terminal autocompletion ---
-FULL_FILE_PATH=$(realpath "./completions/_movienator.sh")
-mkdir -p ~/.custom-zsh-completions
 
-if [ ! -f "~/.custom-zsh-completions/_movienator" ]; then
-    # this branch needs sudo to execute. trap catches errors if sudo is not enabled
+# ------------------ SETTING UP TERMINAL AUTOCOMPLETION ------------------
+GLOBAL_COMPLETIONS_PATH=${HOME}/.custom-zsh-completions/_movienator.sh
+
+if [[ ! -e ${GLOBAL_COMPLETIONS_PATH} ]]; then
+    FULL_FILE_PATH=$(realpath "./completions/_movienator.sh")
+    mkdir -p ~/.custom-zsh-completions
     cp "${FULL_FILE_PATH}" ~/.custom-zsh-completions
-    echo "source ~/.custom-zsh-completions/_movienator" >> ~/.zshrc
-fi
 
-# Reload the ~/.zshrc file
+    echo "source ~/.custom-zsh-completions/_movienator.sh" >> ~/.zshrc
+fi
+# ------------------ SETTING UP TERMINAL AUTOCOMPLETION ------------------
+
+
+# Reloading the ~/.zshrc file
 source ~/.zshrc
+echo "The MOVIE_DATABASE_URL environment variable is set to:\t\"${MOVIE_DATABASE_URL}\"" 
+echo "The terminal tab completions file is stored in:\t\t\"${GLOBAL_COMPLETIONS_PATH}\""
