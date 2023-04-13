@@ -132,13 +132,15 @@ impl MovieDB {
         debug: bool,
     ) -> Result<()> {
         let movies = if let Some(col) = sort {
+            //  error when sorting and searching
             let order = if col == "title" { "ASC" } else { "DESC" };
             let sort_query = format!(
                 "SELECT * FROM Movie WHERE LOWER(title) LIKE ? ORDER BY LOWER({}) {}",
                 col, order
             );
-            
+
             sqlx::query_as::<_, Movie>(&sort_query)
+                .bind(format!("%{}%", title.to_lowercase()))
                 .fetch_all(&mut self.executor)
                 .await?
         } else {
@@ -148,7 +150,7 @@ impl MovieDB {
                 .await?
         };
 
-        pager::Pager::new().setup();
+        pager::Pager::with_pager("less -rF").setup();
         match debug {
             true => movies.iter().for_each(|m| println!("{:?}", m)),
             false => movies.iter().for_each(|m| println!("{}", m)),
@@ -171,7 +173,7 @@ impl MovieDB {
         };
 
         let _print_count = self.count_all().await?;
-        pager::Pager::new().setup();
+        pager::Pager::with_pager("less -rF").setup();
         match debug {
             true => movies.iter().for_each(|m| println!("{:?}", m)),
             false => movies.iter().for_each(|m| println!("{}", m)),
