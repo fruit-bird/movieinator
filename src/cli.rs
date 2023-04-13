@@ -1,15 +1,13 @@
-use std::ops::Deref;
-
 use crate::movie_db::MovieDB;
 use clap::{Parser, Subcommand, ValueEnum};
 use sqlx::Result;
+use std::ops::Deref;
 
 #[derive(Debug, Parser)]
 #[clap(author, version)]
 pub struct MovieCLI {
     #[clap(subcommand)]
     command: MovieOptions,
-    // TODO: Clarify that you need to set a DATABASE_URL environment variable
 }
 
 impl MovieCLI {
