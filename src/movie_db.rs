@@ -132,7 +132,6 @@ impl MovieDB {
         debug: bool,
     ) -> Result<()> {
         let movies = if let Some(col) = sort {
-            //  error when sorting and searching
             let order = if col == "title" { "ASC" } else { "DESC" };
             let sort_query = format!(
                 "SELECT * FROM Movie WHERE LOWER(title) LIKE ? ORDER BY LOWER({}) {}",
@@ -186,10 +185,9 @@ impl MovieDB {
             .fetch_one(&mut self.executor)
             .await?;
 
-        if count == 1 {
-            println!("You have 1 movie stored");
-        } else {
-            println!("You have {} movies stored", count);
+        match count {
+            1 => println!("You have 1 movie stored"),
+            _ => println!("You have {} movies stored", count),
         }
         Ok(count)
     }
