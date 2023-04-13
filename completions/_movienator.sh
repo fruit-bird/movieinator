@@ -30,7 +30,7 @@ _movienator() {
         case $line[1] in
             (add)
 _arguments "${_arguments_options[@]}" \
-'-d+[Date when movie was seen (Format: YYYY-MM-DD)]:WATCH_DATE: ' \
+'-d+[Date when movie was watched (Format: YYYY-MM-DD)]:WATCH_DATE: ' \
 '-r+[0 to 5 rating]:RATING: ' \
 '-t+[Thoughts about the movie]:THOUGHTS: ' \
 '-h[Print help]' \
@@ -40,6 +40,8 @@ _arguments "${_arguments_options[@]}" \
 ;;
 (list)
 _arguments "${_arguments_options[@]}" \
+'-s+[Sort movies by value]:SORT:(title watch-date rating)' \
+'--sort=[Sort movies by value]:SORT:(title watch-date rating)' \
 '()-c[Print number of stored movies]' \
 '()--count[Print number of stored movies]' \
 '-d[Print all info about movies]' \
