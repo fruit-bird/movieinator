@@ -1,5 +1,5 @@
 #!/bin/zsh
-# !! THIS SETUP SCRIPT MUST BE RAN IN THE PROJECT ROOT !!
+# !! THIS SETUP SCRIPT IS AUTOMATICALLY RAN WHEN BUILDING THE PROJECT !!
 
 # exit immediately if anything fails
 set -e
