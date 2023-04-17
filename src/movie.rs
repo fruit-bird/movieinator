@@ -43,7 +43,7 @@ impl Display for Movie {
             watch_date,
             rating,
             thoughts,
-            title_width, // 4th positional argument
+            title_width, // the 4th positional argument
             date_width = default_width + 2,
             rating_width = default_width - 1,
         )
