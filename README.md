@@ -36,8 +36,8 @@ $ movienator add "Interstellar" -r 5 -t "Realistic black hole"
   
 $ movienator list
   You have 2 movies stored
-  * | Cloud Atlas                             |  1970-01-01  |   5/5   | (no thoughts)
-  * | Interstellar                            |   ________   |   5/5   | Realistic black hole
+  * │ Cloud Atlas                             │  1970-01-01  │   5/5   │ (no thoughts)
+  * │ Interstellar                            │   ________   │   5/5   │ Realistic black hole
 ```
 
 ## Cool Things
