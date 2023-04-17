@@ -38,7 +38,7 @@ impl Display for Movie {
 
         write!(
             f,
-            "* | {:4$}| {:^date_width$} |{:^rating_width$}| {:^}",
+            "* │ {:4$}│ {:^date_width$} │{:^rating_width$}│ {:^}",
             title,
             watch_date,
             rating,
